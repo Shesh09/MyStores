@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyStore.Data
 {
-   public interface IProductRepository
+    public interface IProductRepository
     {
         //data access code //CRUD
         IEnumerable<Product> GetAll();
@@ -30,7 +30,7 @@ namespace MyStore.Data
         public IEnumerable<Product> GetAll()
         {
             return context.Products.ToList();
-        }        
+        }
 
         public Product FindByProductId(int productId)
         {

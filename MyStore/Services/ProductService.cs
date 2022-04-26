@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace MyStore.Services
 {
-   public interface IProductService
+    public interface IProductService
     {
-        public IEnumerable<ProductModel> GetAllProducts();
-        public ProductModel AddProduct(ProductModel newProduct);
-        void UpdateProduct(ProductModel model);
-        bool Delete(int id);
+        IEnumerable<ProductModel> GetAllProducts();
+        Product GetById(int id);
+        ProductModel AddProduct(ProductModel newProduct);
+        ProductModel UpdateProduct(ProductModel model);
         bool Exists(int id);
+        bool Delete(int id);
     }
-
 
     public class ProductService : IProductService
     {
@@ -29,42 +29,37 @@ namespace MyStore.Services
             this.productRepository = productRepository;
             this.mapper = mapper;
         }
-
         public IEnumerable<ProductModel> GetAllProducts()
         {
-            var allProducts = productRepository.GetAll().ToList();
+            //take domain objects
+            var allProducts = productRepository.GetAll().ToList();//List<Product>
+                                                                  //transform domain objects from List<Product> -> List<ProductModel>
+            var productModels = mapper.Map<IEnumerable<ProductModel>>(allProducts);
 
-            //var productmodel = new List<ProductModel>();
-            var productModel = mapper.Map<IEnumerable<ProductModel>>(allProducts);
-
-
-            return productModel;
-        }
-
-
-        public ProductModel AddProduct(ProductModel newProduct)
-        {
-            //--.ProductModel -> Product
-            //assuming is valid= 
-
-            Product productToAdd = mapper.Map<Product>(newProduct);
-            var addedProduct = productRepository.Add(productToAdd);
-
-            newProduct = mapper.Map<ProductModel>(addedProduct);
-
-            return newProduct;
-
-        }
-
-        public void UpdateProduct(ProductModel model)
-        {
-            Product productToUpdate = mapper.Map<Product>(model);
-            productRepository.Update(productToUpdate);
+            return productModels;
         }
 
         public Product GetById(int id)
         {
-            return productRepository.GetById(id);
+            return (Product)productRepository.FindByProductId(id);
+        }
+
+        public ProductModel AddProduct(ProductModel newProduct)
+        {
+            // -> ProductModel in Product
+            //assuming is valid -> transform to Product(domain object)
+            Product productToAdd = mapper.Map<Product>(newProduct);
+            var addedProduct = productRepository.Add(productToAdd);
+            newProduct = mapper.Map<ProductModel>(addedProduct);
+
+            return newProduct;
+        }
+
+        public ProductModel UpdateProduct(ProductModel model)
+        {
+            Product productToUpdate = mapper.Map<Product>(model);
+            var updatedProduct = productRepository.Update(productToUpdate);
+            return mapper.Map<ProductModel>(updatedProduct);
         }
 
         public bool Exists(int id)
@@ -72,16 +67,13 @@ namespace MyStore.Services
             return productRepository.Exists(id);
         }
 
-
-       public bool Delete(int id)
+        public bool Delete(int id)
         {
             //get item by id
+            var itemToDelete = productRepository.FindByProductId(id);
             //delete item
-            var itemToDelete = productRepository.GetById(id);
             return productRepository.Delete(itemToDelete);
         }
-
-       
     }
-    
+
 }

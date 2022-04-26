@@ -27,11 +27,11 @@ namespace MyStore.Controllers
         [HttpGet]
         public IEnumerable<CustomerModel> Get()
         {
-            var customerList = customerService.GetAllCustomer();
+            var customerList = customerService.GetAllCustomers();
             return customerList;
         }
 
-         // GET api/<CustomersController>/5
+        // GET api/<CustomersController>/5
         [HttpGet("{id}")]
         public Customer Get(int id)
         {
@@ -54,7 +54,7 @@ namespace MyStore.Controllers
 
         }
 
-          // PUT api/<CustomersController>/5
+        // PUT api/<CustomersController>/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] CustomerModel customerToUpdate)
         {
@@ -71,7 +71,7 @@ namespace MyStore.Controllers
             return NoContent();
         }
 
-         // DELETE api/<CustomersController>/5
+        // DELETE api/<CustomersController>/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -86,4 +86,5 @@ namespace MyStore.Controllers
             //daca nu s-a sters, return 422 status code
             return NoContent();
         }
+    }
 }

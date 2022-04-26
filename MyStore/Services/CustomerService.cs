@@ -11,12 +11,15 @@ namespace MyStore.Services
 {
     public interface ICustomerService
     {
-        public IEnumerable<CustomerModel> GetAllCustomer();
-        public CustomerModel AddCustomer(CustomerModel newCustomer);
-        
+        CustomerModel AddCustomer(CustomerModel newCustomer);
+        bool Delete(int id);
+        bool Exists(int id);
+        IEnumerable<CustomerModel> GetAllCustomers();
+        Customer GetById(int id);
+        void UpdateCustomer(CustomerModel model);
     }
-    public class CustomerService : ICustomerService
 
+    public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository customerRepository;
         private readonly IMapper mapper;
@@ -27,25 +30,45 @@ namespace MyStore.Services
             this.mapper = mapper;
         }
 
+        public IEnumerable<CustomerModel> GetAllCustomers()
+        {
+            var allCustomers = customerRepository.GetAll().ToList();
+            var customerModel = mapper.Map<IEnumerable<CustomerModel>>(allCustomers);
+
+            return customerModel;
+        }
+
+        public Customer GetById(int id)
+        {
+            return (Customer)customerRepository.FindByCustomerId(id);
+        }
+
         public CustomerModel AddCustomer(CustomerModel newCustomer)
         {
             Customer customerToAdd = mapper.Map<Customer>(newCustomer);
             var addedCustomer = customerRepository.Add(customerToAdd);
-
             newCustomer = mapper.Map<CustomerModel>(addedCustomer);
 
             return newCustomer;
         }
 
-        public IEnumerable<CustomerModel> GetAllCustomer()
+        public void UpdateCustomer(CustomerModel model)
         {
-            var allCustomer = customerRepository.GetAll().ToList();
+            Customer customerToUpdate = mapper.Map<Customer>(model);
+            customerRepository.Update(customerToUpdate);
+        }
 
-            //var productmodel = new List<ProductModel>();
-            var customerModel = mapper.Map<IEnumerable<CustomerModel>>(allCustomer);
+        public bool Exists(int id)
+        {
+            return customerRepository.Exists(id);
+        }
 
-
-            return customerModel;
+        public bool Delete(int id)
+        {
+            //get item by id
+            var itemToDelete = customerRepository.FindByCustomerId(id);
+            //delete item
+            return customerRepository.Delete(itemToDelete);
         }
     }
 }
